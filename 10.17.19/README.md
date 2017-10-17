@@ -147,4 +147,18 @@ void loop() {
  
 } ```
 
+# Classmates' work
 
+I was super impressed by some of my fellow classmates' work!
+
+## Lightning
+
+This project takes a person's hand pressure and creates a "lightning and thunderstorm" emulation through a diorama and a Processing app. 
+
+## Emoji Receipt
+
+In this project, a box has several switches. One switch goes from "yes" or "no"; another from "chill" or "pissed". A person breathes into a machine, selects the switches based on their response to a question you ask, and a receipt prints out an emoticon in relation to the options picked. 
+
+## Breath
+
+A person is outfitted with a belt that tracks their breath. Their breath affects a lever, which pulls on a ball, causing the ball to expand or contract.
