@@ -2,6 +2,10 @@
 
 Our assignment was to create anything we wanted using the Arduino. I decided to use a plant as a "sensor" and have it output messages to the user.
 
+## How it works
+
+I taped the stems of the plant with copper strips to create a pseudo-sensor. Whenever someone rustles the plant and connects the copper strips, a message is outputted to the LCD screen. The plant gets increasingly more irritated with the user. Stop touching!
+
 
 
 ## Video
