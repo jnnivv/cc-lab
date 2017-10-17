@@ -145,7 +145,9 @@ void loop() {
    //lcd.print("not touching");
  }
  
-} ```
+} 
+
+```
 
 # Classmates' work
 
