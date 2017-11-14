@@ -1,0 +1,58 @@
+body {
+  background-image: url(bg.png);
+  background-repeat: repeat;
+  font-family: 'Inconsolata';
+  color:#f79c8d;
+  margin: 0;
+}
+
+#execute-request-button {
+  border: none;
+  font-family: 'Inconsolata';
+}
+
+#footer{
+  background-color:#ffeee3;
+  padding: 50px;
+}
+
+#microphone {
+  margin: 0 auto;
+}
+
+#full {
+
+  position:relative;
+  max-width:1980px;
+
+}
+
+#full img {
+  max-width: 100%;
+}
+
+.overlay {
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:20;
+}
+
+.cat {
+  position:absolute;
+  top:50%;
+  left:0;
+  z-index:20;
+}
+
+#player {
+  position:absolute;
+  /*top:28vh;
+  left:35vw;*/
+  top:26%;
+  left:34.5%;
+  z-index:10;
+  width:31%;
+  height:31%;
+
+}

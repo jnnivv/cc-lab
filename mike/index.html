@@ -1,0 +1,312 @@
+<html>
+ <head>
+   <link rel="stylesheet" href="microphone/css/microphone.min.css">
+   <link rel="stylesheet" href="style.css">
+   <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+ </head>
+ <body style="text-align: center;">
+<img class="cat" src=""/>
+   <center>
+   <div id="full"><img src="full.png">
+     <img class="overlay" src=""/>
+
+     <div id="player">
+     </div></div>
+     </center>
+     <div id="footer">
+   <div id="microphone"></div>
+
+   <pre id="result"></pre>
+   <div id="info"></div>
+   <div id="error"></div>
+   <button id="execute-request-button">Authorize</button>
+ </div>
+   <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+
+
+
+
+   <script src="microphone/js/microphone.min.js"></script>
+
+   <script>
+     var mic = new Wit.Microphone(document.getElementById("microphone"));
+     var info = function (msg) {
+       document.getElementById("info").innerHTML = msg;
+     };
+     var error = function (msg) {
+       document.getElementById("error").innerHTML = msg;
+     };
+     mic.onready = function () {
+       info("Microphone is ready to record");
+     };
+     mic.onaudiostart = function () {
+       info("Recording started");
+       error("");
+     };
+     mic.onaudioend = function () {
+       info("Recording stopped, processing started");
+     };
+     mic.onresult = function (intent, entities) {
+       console.log(intent);
+       console.log(entities);
+       const q = entities;
+       if(q!=null) {
+          if(q.search_query && q.intent.value == "watch") {
+            defineRequest(entities.search_query.value);
+            $(".overlay").attr("src", "");
+            $(".cat").attr("src", "");
+          }
+          if(q.intent.value == "paper") {
+            $(".overlay").attr("src", "kermit.png");
+          }
+          if(q.intent.value == "drink" || q.search_query.value == "drinking") {
+            $(".overlay").attr("src", "coffee.png");
+          }
+          if(q.intent.value == "read" && q.search_query.value != "drinking") {
+            $(".overlay").attr("src", "1a9.gif");
+          }
+          if(q.intent.value == "cat") {
+            $(".cat").attr("src", "b7a.gif");
+            $(".cat").animate({
+                "left": "120%"
+            }, 5000);
+          }
+       }
+       var r = kv("intent", intent);
+
+       for (var k in entities) {
+         var e = entities[k];
+
+         if (!(e instanceof Array)) {
+           r += kv(k, e.value);
+         } else {
+           for (var i = 0; i < e.length; i++) {
+             r += kv(k, e[i].value);
+           }
+         }
+       }
+
+       document.getElementById("result").innerHTML = r;
+     };
+     mic.onerror = function (err) {
+       error("Error: " + err);
+     };
+     mic.onconnecting = function () {
+       info("Microphone is connecting");
+     };
+     mic.ondisconnected = function () {
+       info("Microphone is not connected");
+     };
+
+     mic.connect("RUXSZNRLGVIRCFN24KHFJEE2BKIY3M7C");
+     // mic.start();
+     // mic.stop();
+
+     function kv (k, v) {
+       if (toString.call(v) !== "[object String]") {
+         v = JSON.stringify(v);
+       }
+       return k + "=" + v + "\n";
+     }
+
+
+  /***** START BOILERPLATE CODE: Load client library, authorize user. *****/
+
+  // Global variables for GoogleAuth object, auth status.
+  var GoogleAuth;
+
+  /**
+   * Load the API's client and auth2 modules.
+   * Call the initClient function after the modules load.
+   */
+  function handleClientLoad() {
+    gapi.load('client:auth2', initClient);
+  }
+
+  function initClient() {
+    // Initialize the gapi.client object, which app uses to make API requests.
+    // Get API key and client ID from API Console.
+    // 'scope' field specifies space-delimited list of access scopes
+
+    gapi.client.init({
+        'clientId': '615234137625-s6qlerl27bb1t9p58dc9mf8a84r1vnii.apps.googleusercontent.com',
+        'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest'],
+        'scope': 'https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtubepartner'
+    }).then(function () {
+      GoogleAuth = gapi.auth2.getAuthInstance();
+
+      // Listen for sign-in state changes.
+      GoogleAuth.isSignedIn.listen(updateSigninStatus);
+
+      // Handle initial sign-in state. (Determine if user is already signed in.)
+      setSigninStatus();
+
+      // Call handleAuthClick function when user clicks on "Authorize" button.
+      $('#execute-request-button').click(function(event) {
+        handleAuthClick(event);
+      });
+    });
+  }
+
+  function handleAuthClick(event) {
+    // Sign user in after click on auth button.
+    GoogleAuth.signIn();
+  }
+
+  function setSigninStatus() {
+    var user = GoogleAuth.currentUser.get();
+    isAuthorized = user.hasGrantedScopes('https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtubepartner');
+    // Toggle button text and displayed statement based on current auth status.
+    if (isAuthorized) {
+      //defineRequest();
+    }
+  }
+
+  function updateSigninStatus(isSignedIn) {
+    setSigninStatus();
+  }
+
+  function createResource(properties) {
+    var resource = {};
+    var normalizedProps = properties;
+    for (var p in properties) {
+      var value = properties[p];
+      if (p && p.substr(-2, 2) == '[]') {
+        var adjustedName = p.replace('[]', '');
+        if (value) {
+          normalizedProps[adjustedName] = value.split(',');
+        }
+        delete normalizedProps[p];
+      }
+    }
+    for (var p in normalizedProps) {
+      // Leave properties that don't have values out of inserted resource.
+      if (normalizedProps.hasOwnProperty(p) && normalizedProps[p]) {
+        var propArray = p.split('.');
+        var ref = resource;
+        for (var pa = 0; pa < propArray.length; pa++) {
+          var key = propArray[pa];
+          if (pa == propArray.length - 1) {
+            ref[key] = normalizedProps[p];
+          } else {
+            ref = ref[key] = ref[key] || {};
+          }
+        }
+      };
+    }
+    return resource;
+  }
+
+  function removeEmptyParams(params) {
+    for (var p in params) {
+      if (!params[p] || params[p] == 'undefined') {
+        delete params[p];
+      }
+    }
+    return params;
+  }
+
+  function executeRequest(request) {
+    request.execute(function(response) {
+      console.log(response.items[0].id.videoId);
+      const id = response.items[0].id.videoId;
+      console.log(player);
+      if(player!=null) {
+        player.loadVideoById(id);
+      } else {
+        player = new YT.Player('player', {
+          height: '56%',
+          width: '56%',
+          videoId: id,
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+    });
+  }
+
+  function buildApiRequest(requestMethod, path, params, properties) {
+    params = removeEmptyParams(params);
+    var request;
+    if (properties) {
+      var resource = createResource(properties);
+      request = gapi.client.request({
+          'body': resource,
+          'method': requestMethod,
+          'path': path,
+          'params': params
+      });
+    } else {
+      request = gapi.client.request({
+          'method': requestMethod,
+          'path': path,
+          'params': params
+      });
+    }
+    executeRequest(request);
+  }
+
+  /***** END BOILERPLATE CODE *****/
+
+
+  function defineRequest(vid) {
+    // See full sample for buildApiRequest() code, which is not
+// specific to a particular API or API method.
+
+buildApiRequest('GET',
+                '/youtube/v3/search',
+                {'maxResults': '5',
+                 'part': 'snippet',
+                 'q': vid,
+                 'type': ''});
+
+  }
+
+    // 2. This code loads the IFrame Player API code asynchronously.
+    var tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // 3. This function creates an <iframe> (and YouTube player)
+    //    after the API code downloads.
+    var player;
+    function onYouTubeIframeAPIReady(video) {
+
+    }
+
+    // 4. The API will call this function when the video player is ready.
+    function onPlayerReady(event) {
+      event.target.playVideo();
+    }
+
+    // 5. The API calls this function when the player's state changes.
+    //    The function indicates that when playing a video (state=1),
+    //    the player should play for six seconds and then stop.
+    var done = false;
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING && !done) {
+        //setTimeout(stopVideo, 6000);
+        done = true;
+      }
+    }
+    function stopVideo() {
+      player.stopVideo();
+    }
+
+
+  </script>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script async defer src="https://apis.google.com/js/api.js"
+        onload="this.onload=function(){};handleClientLoad()"
+        onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script>
+
+ </body>
+ </html>
